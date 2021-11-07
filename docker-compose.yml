@@ -83,11 +83,11 @@ services:
       restart: unless-stopped
       environment:
           WORDPRESS_DB_HOST: db2
+          WORDPRESS_DB_NAME: storage-2
           WORDPRESS_DB_USER: randomuser2
           WORDPRESS_DB_PASSWORD: whoisuser
-          WORDPRESS_DB_NAME: storage-2
       labels:
-          - "traefik.enable=false"
+          - traefik.enable=false
       volumes:
           - $PWD/blog:/var/www/html
       links:

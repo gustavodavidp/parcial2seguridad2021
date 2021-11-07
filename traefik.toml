@@ -8,6 +8,9 @@ address = ":8080"
 users = ["azureuser:$apr1$Dov6kg6Y$PzA5dzKzofuM.MtHuNHwz1"]
 
 [entryPoints.http]
+address = ":80"
+
+[entryPoints.http.redirect]
 entryPoint = "https"
 
 [entryPoints.https]
@@ -27,7 +30,7 @@ OnHostRule=true
 
 
 [acme. httpChallenge]
-entryPoint =  "http"
+entryPoint = "http"
 
 [docker]
 domain = "parcialdosgrupojvidalmpittiechacingpolanco.ga"
