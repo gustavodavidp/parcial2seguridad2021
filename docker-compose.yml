@@ -77,43 +77,43 @@ services:
             - $PWD/blog/logs-wp1/nginx-wp1:/var/log/nginx
             - $PWD/blog:/var/www/html
 
-    wp-fpm:
-        container_name: "wp-fpm"
-        image: wordpress:php7.3-fpm-alpine
-        restart: unless-stopped
-        environment:
-            WORDPRESS_DB_HOST: db2
-            WORDPRESS_DB_USER: randomuser2
-            WORDPRESS_DB_PASSWORD: whoisuser
-            WORDPRESS_DB_NAME: storage-2
-        labels:
-            - "traefik.enable=false"
-        volumes:
-            - $PWD/blog:/var/www/html
-        links:
-            - db2
+  wp-fpm:
+      container_name: "wp-fpm"
+      image: wordpress:php7.3-fpm-alpine
+      restart: unless-stopped
+      environment:
+          WORDPRESS_DB_HOST: db2
+          WORDPRESS_DB_USER: randomuser2
+          WORDPRESS_DB_PASSWORD: whoisuser
+          WORDPRESS_DB_NAME: storage-2
+      labels:
+          - "traefik.enable=false"
+      volumes:
+          - $PWD/blog:/var/www/html
+      links:
+          - db2
 
-    db2:
-        image: mysql:5.7
-        container_name: "db2"
-        restart: always
-        environment:
-            MYSQL_DATABASE: storage-2
-            MYSQL_USER: randomuser2
-            MYSQL_PASSWORD: whoisuser
-            MYSQL_RANDOM_ROOT_PASSWORD: '1'
-        labels:
-            - "traeifk.enable=false"
-        volumes:
-            - $PWD/db-2:/var/lib/mysql
+  db2:
+      image: mysql:5.7
+      container_name: "db2"
+      restart: always
+      environment:
+          MYSQL_DATABASE: storage-2
+          MYSQL_USER: randomuser2
+          MYSQL_PASSWORD: whoisuser
+          MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      labels:
+          - "traeifk.enable=false"
+      volumes:
+          - $PWD/db-2:/var/lib/mysql
 
-    adminer2:
-        image: adminer:4.6.3-standalone
-        container_name: "adminer-2"
-        labels:
-            - "traefik.backend=adminer2"
-            - "traefik.frontend.rule=Host:admin-db2.parcialdosgrupojvidalmpittiechacingpolanco.ga"
-            - "traefik.docker.network=web"
-            - "traefik.port=8080"
-        links:
-            - db2
+  adminer2:
+      image: adminer:4.6.3-standalone
+      container_name: "adminer-2"
+      labels:
+          - "traefik.backend=adminer2"
+          - "traefik.frontend.rule=Host:admin-db2.parcialdosgrupojvidalmpittiechacingpolanco.ga"
+          - "traefik.docker.network=web"
+          - "traefik.port=8080"
+      links:
+          - db2
