@@ -1,0 +1,119 @@
+version: '3.1'
+
+services:
+
+  load-balancer:
+    image: "traefik:1.6"
+    container_name: "traefik"
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - $PWD/traefik.toml:/traefik.toml
+      - $PWD/acme.json:/acme.json
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=dashboard"
+      - "traefik.frontend.rule=Host:dashboard.parcialdosgrupojvidalmpittiechacingpolanco.ga"
+      - "traefik.docker.network=web"
+      - "traefik.port=8080"
+
+    web:
+        image: wordpress
+        environment:
+          WORDPRESS_DB_HOST: db1
+          WORDPRESS_DB_USER: randomuser1
+          WORDPRESS_DB_PASSWORD: whoisuser
+          WORDPRESS_DB_NAME: storage-1
+        labels:
+          - "traefik.backend=web"
+          - "traefik.frontend.rule=Host:web.parcialdosgrupojvidalmpittiechacingpolanco.ga"
+          - "traefik.docker.network=web"
+          - "traefik.port=80"
+        volumes:
+          - $PWD/web:/var/www/htmml
+        links:
+          - db1
+
+    adminer1:
+        image: adminer:4.6.3-standalone
+        container_name: "adminer-1"
+        labels:
+          - "traefik.backend=adminer1"
+          - "traefik.frontend.rule=Host:admin-db1.parcialdosgrupojvidalmpittiechacingpolanco.ga"
+          - "traefik.docker.network=web"
+          - "traefik.port=8080"
+        links:
+            - db1
+
+    db1:
+        image: mysql:5.7
+        container_name: "db1"
+        restart: always
+        environment:
+            MYSQL_DATABASE: storage-1
+            MYSQL_USER: randomuser1
+            MYSQL_PASSWORD: whoisuser
+            MYSQL_RANDOM_ROOT_PASSWORD: '1'
+        labels:
+          - "traefik.enable=false"
+        volumes:
+          - $PWD/db-1:/var/lib/mysql
+
+    nginx:
+        container_name: "nginx"
+        image: nginx:alpine
+        restart: unless-stopped
+        ports:
+            - '80'
+        labels:
+            - "traefik.backend=nginx"
+            - "traefik.frontend.rule=Host:wp-fpm.parcialdosgrupojvidalmpittiechacingpolanco.ga"
+            - "traefik.docker.network=web"
+        volumes:
+            - $PWD/nginx.conf:/etc/nginx/conf.d/nginx.conf
+            - $PWD/blog/logs-wp1/nginx-wp1:/var/log/nginx
+            - $PWD/blog:/var/www/html
+
+    wp-fpm:
+        container_name: "wp-fpm"
+        image: wordpress:php7.3-fpm-alpine
+        restart: unless-stopped
+        environment:
+            WORDPRESS_DB_HOST: db2
+            WORDPRESS_DB_USER: randomuser2
+            WORDPRESS_DB_PASSWORD: whoisuser
+            WORDPRESS_DB_NAME: storage-2
+        labels:
+            - "traefik.enable=false"
+        volumes:
+            - $PWD/blog:/var/www/html
+        links:
+            - db2
+
+    db2:
+        image: mysql:5.7
+        container_name: "db2"
+        restart: always
+        environment:
+            MYSQL_DATABASE: storage-2
+            MYSQL_USER: randomuser2
+            MYSQL_PASSWORD: whoisuser
+            MYSQL_RANDOM_ROOT_PASSWORD: '1'
+        labels:
+            - "traeifk.enable=false"
+        volumes:
+            - $PWD/db-2:/var/lib/mysql
+
+    adminer2:
+        image: adminer:4.6.3-standalone
+        container_name: "adminer-2"
+        labels:
+            - "traefik.backend=adminer2"
+            - "traefik.frontend.rule=Host:admin-db2.parcialdosgrupojvidalmpittiechacingpolanco.ga"
+            - "traefik.docker.network=web"
+            - "traefik.port=8080"
+        links:
+            - db2

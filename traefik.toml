@@ -1,0 +1,35 @@
+defaultEntryPoints=["http", "https"]
+
+[entryPoints]
+[entryPoints.dashboard]
+address = ":8080"
+[entryPoints.dashboard.auth]
+[entryPoints.dashboard.auth.basic]
+users = ["azureuser:"]
+
+[entryPoints.http]
+entryPoint = "https"
+
+[entryPoints.https]
+address = ":443"
+
+[entryPoints.https.tls]
+
+[api]
+entrypoint="dashboard"
+
+[acme]
+email="gustavo.polanco2@utp.ac.pa"
+caServer = "https://acme-v02.api.letsencrypt.org/directory"
+storage="acme.json"
+entryPoint="https"
+OnHostRule=true
+
+
+[acme. httpChallenge]
+entryPoint =  "http"
+
+[docker]
+domain = "parcialdosgrupojvidalmpittiechacingpolanco.ga"
+watch = true
+network = "web"
